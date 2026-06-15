@@ -22,6 +22,7 @@ class User(Base):
     role = Column(String, default="user", nullable=False)  # "admin", "user"
     status = Column(String, default="active", nullable=False)  # "active", "disabled"
     points = Column(Integer, default=0, nullable=False)
+    mobile_number = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow, nullable=False)
     
     # Relationships

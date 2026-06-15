@@ -41,7 +41,8 @@ def register_user(user_in: UserRegister, db: Session = Depends(get_db)):
         password_hash=hashed_pwd,
         role="user",
         status="active",
-        points=0
+        points=0,
+        mobile_number=user_in.mobile_number
     )
     db.add(user)
     db.commit()
@@ -91,11 +92,18 @@ def login_user(login_in: UserLogin, db: Session = Depends(get_db)):
                 password_hash=dummy_pwd_hash,
                 role="user",
                 status="active",
-                points=0
+                points=0,
+                mobile_number=login_in.mobile_number
             )
             db.add(user)
             db.commit()
             db.refresh(user)
+        else:
+            # Update mobile number if provided and changed
+            if login_in.mobile_number and user.mobile_number != login_in.mobile_number:
+                user.mobile_number = login_in.mobile_number
+                db.commit()
+                db.refresh(user)
             
     if user.status != "active":
         raise HTTPException(

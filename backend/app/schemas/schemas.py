@@ -16,15 +16,18 @@ class TokenPayload(BaseModel):
 class UserLogin(BaseModel):
     email: str
     password: Optional[str] = None
+    mobile_number: Optional[str] = None
 
 class UserRegister(BaseModel):
     email: str
     password: Optional[str] = None
     full_name: str
+    mobile_number: Optional[str] = None
 
 class UserProfileUpdate(BaseModel):
     full_name: Optional[str] = None
     password: Optional[str] = None
+    mobile_number: Optional[str] = None
 
 class UserStatusUpdate(BaseModel):
     status: str  # "active" or "disabled"
@@ -36,7 +39,9 @@ class UserResponse(BaseModel):
     role: str
     status: str
     points: int
+    mobile_number: Optional[str] = None
     created_at: datetime
+
 
     class Config:
         from_attributes = True

@@ -699,7 +699,7 @@ export const AdminDashboard: React.FC = () => {
               <thead>
                 <tr className="bg-surface-container-high/60 border-b border-outline-variant/20 text-outline text-label-md">
                   <th className="py-4 px-6">Name</th>
-                  <th className="py-4 px-6">Email</th>
+                  <th className="py-4 px-6">Mobile</th>
                   <th className="py-4 px-6">Points</th>
                   <th className="py-4 px-6">Registered On</th>
                   <th className="py-4 px-6">Status</th>
@@ -710,7 +710,7 @@ export const AdminDashboard: React.FC = () => {
                 {users.map((u) => (
                   <tr key={u.id} className="hover:bg-surface-container-highest/20 transition-colors">
                     <td className="py-4 px-6 font-semibold">{u.full_name}</td>
-                    <td className="py-4 px-6 text-on-surface-variant">{u.email}</td>
+                    <td className="py-4 px-6 text-on-surface-variant">{u.mobile_number || 'N/A'}</td>
                     <td className="py-4 px-6 font-stats-xl text-primary font-bold text-sm">{u.points}</td>
                     <td className="py-4 px-6 text-xs text-on-surface-variant">
                       {new Date(u.created_at).toLocaleDateString()}

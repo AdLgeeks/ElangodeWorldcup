@@ -30,6 +30,8 @@ def update_profile(
     """Updates user's own profile (full name, password)."""
     if profile_in.full_name is not None:
         current_user.full_name = profile_in.full_name
+    if profile_in.mobile_number is not None:
+        current_user.mobile_number = profile_in.mobile_number
     if profile_in.password is not None:
         if len(profile_in.password) < 6:
             raise HTTPException(

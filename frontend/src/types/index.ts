@@ -5,6 +5,7 @@ export interface User {
   role: 'admin' | 'user';
   status: 'active' | 'disabled';
   points: number;
+  mobile_number?: string;
   created_at: string;
 }
 

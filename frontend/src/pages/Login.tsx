@@ -1,33 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, User as UserIcon, AlertCircle } from 'lucide-react';
+import { LogIn, User as UserIcon, Phone, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [name, setName] = useState('');
+  const [mobileNumber, setMobileNumber] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmedName = name.trim();
-    if (!trimmedName) {
-      setError('Please enter your name.');
+    const trimmedMobile = mobileNumber.trim();
+    if (!trimmedName || !trimmedMobile) {
+      setError('Please fill in both name and mobile number.');
       return;
     }
     setError(null);
     setLoading(true);
     try {
-      const user = await login(trimmedName);
+      const user = await login(trimmedName, undefined, trimmedMobile);
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
         navigate('/dashboard');
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Login failed. Please check your details.');
     } finally {
       setLoading(false);
     }
@@ -42,7 +44,7 @@ export const Login: React.FC = () => {
       <div className="glass-card w-full max-w-md rounded-2xl p-8 relative z-10 flex flex-col">
         <div className="text-center mb-8">
           <h1 className="font-display-lg text-headline-lg text-primary font-black tracking-tight mb-2">Elangode</h1>
-          <p className="text-on-surface-variant text-body-md">Enter your name to start predicting matches</p>
+          <p className="text-on-surface-variant text-body-md">Enter your name and mobile number to predict matches</p>
         </div>
 
         {error && (
@@ -66,6 +68,24 @@ export const Login: React.FC = () => {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. John"
+                className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-label-md text-on-surface mb-2" htmlFor="mobileNumber">
+              Mobile Number
+            </label>
+            <div className="relative">
+              <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
+              <input
+                id="mobileNumber"
+                type="tel"
+                required
+                value={mobileNumber}
+                onChange={(e) => setMobileNumber(e.target.value)}
+                placeholder="e.g. +91 9876543210"
                 className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
               />
             </div>

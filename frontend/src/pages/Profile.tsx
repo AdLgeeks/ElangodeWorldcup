@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navbar } from '../components/Navbar';
-import { User, Lock, Save, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Lock, Save, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 
 export const Profile: React.FC = () => {
   const { user, updateProfile } = useAuth();
   const [fullName, setFullName] = useState(user?.full_name || '');
+  const [mobileNumber, setMobileNumber] = useState(user?.mobile_number || '');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -35,7 +36,7 @@ export const Profile: React.FC = () => {
 
     setLoading(true);
     try {
-      await updateProfile(fullName, password || undefined);
+      await updateProfile(fullName, password || undefined, mobileNumber || undefined);
       setSuccess('Profile updated successfully!');
       setPassword('');
       setConfirmPassword('');
@@ -97,6 +98,24 @@ export const Profile: React.FC = () => {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Full Name"
+                    className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-label-md text-on-surface mb-2" htmlFor="mobileNumber">
+                  Mobile Number
+                </label>
+                <div className="relative">
+                  <Phone size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
+                  <input
+                    id="mobileNumber"
+                    type="tel"
+                    required
+                    value={mobileNumber}
+                    onChange={(e) => setMobileNumber(e.target.value)}
+                    placeholder="Mobile Number"
                     className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
                   />
                 </div>

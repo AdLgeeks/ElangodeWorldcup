@@ -11,6 +11,15 @@ from app.routers import auth, questions, predictions, results, leaderboard, user
 # Initialize DB tables
 Base.metadata.create_all(bind=engine)
 
+# Dynamically add mobile_number column if not exists
+from sqlalchemy import text
+try:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE users ADD COLUMN mobile_number VARCHAR;"))
+except Exception:
+    pass
+
+
 # Seed default Admin User if not exists
 db = SessionLocal()
 try:

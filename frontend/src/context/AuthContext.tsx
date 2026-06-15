@@ -5,10 +5,10 @@ import { apiRequest } from '../services/api';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password?: string) => Promise<User>;
-  register: (email: string, password?: string, full_name?: string) => Promise<User>;
+  login: (email: string, password?: string, mobileNumber?: string) => Promise<User>;
+  register: (email: string, password?: string, full_name?: string, mobileNumber?: string) => Promise<User>;
   logout: () => void;
-  updateProfile: (fullName?: string, password?: string) => Promise<User>;
+  updateProfile: (fullName?: string, password?: string, mobileNumber?: string) => Promise<User>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,10 +50,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (email: string, password?: string): Promise<User> => {
+  const login = async (email: string, password?: string, mobileNumber?: string): Promise<User> => {
     const tokens = await apiRequest<{ access_token: string; refresh_token: string }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, ...(password && { password }) }),
+      body: JSON.stringify({ 
+        email, 
+        ...(password && { password }),
+        ...(mobileNumber && { mobile_number: mobileNumber })
+      }),
       skipAuth: true,
     });
     
@@ -65,10 +69,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return currentUser;
   };
 
-  const register = async (email: string, password?: string, full_name?: string): Promise<User> => {
+  const register = async (email: string, password?: string, full_name?: string, mobileNumber?: string): Promise<User> => {
     const newUser = await apiRequest<User>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify({ email, password, full_name }),
+      body: JSON.stringify({ email, password, full_name, mobile_number: mobileNumber }),
       skipAuth: true,
     });
     return newUser;
@@ -81,12 +85,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
   };
 
-  const updateProfile = async (fullName?: string, password?: string): Promise<User> => {
+  const updateProfile = async (fullName?: string, password?: string, mobileNumber?: string): Promise<User> => {
     const updatedUser = await apiRequest<User>('/users/profile', {
       method: 'PUT',
       body: JSON.stringify({
         ...(fullName && { full_name: fullName }),
         ...(password && { password }),
+        ...(mobileNumber && { mobile_number: mobileNumber }),
       }),
     });
     setUser(updatedUser);
