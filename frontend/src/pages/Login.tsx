@@ -1,26 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react';
+import { LogIn, User as UserIcon, AlertCircle } from 'lucide-react';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Please fill in all fields.');
+    const trimmedName = name.trim();
+    if (!trimmedName) {
+      setError('Please enter your name.');
       return;
     }
     setError(null);
     setLoading(true);
     try {
-      const user = await login(email, password);
+      const user = await login(trimmedName);
       if (user.role === 'admin') {
         navigate('/admin');
       } else {
@@ -42,7 +42,7 @@ export const Login: React.FC = () => {
       <div className="glass-card w-full max-w-md rounded-2xl p-8 relative z-10 flex flex-col">
         <div className="text-center mb-8">
           <h1 className="font-display-lg text-headline-lg text-primary font-black tracking-tight mb-2">Elangode</h1>
-          <p className="text-on-surface-variant text-body-md">Sign in to start daily match predictions</p>
+          <p className="text-on-surface-variant text-body-md">Enter your name to start predicting matches</p>
         </div>
 
         {error && (
@@ -54,36 +54,18 @@ export const Login: React.FC = () => {
 
         <form onSubmit={handleSubmit} className="space-y-stack-md">
           <div>
-            <label className="block text-label-md text-on-surface mb-2" htmlFor="email">
-              Email Address
+            <label className="block text-label-md text-on-surface mb-2" htmlFor="name">
+              Your Unique Name
             </label>
             <div className="relative">
-              <Mail size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
+              <UserIcon size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
               <input
-                id="email"
-                type="email"
+                id="name"
+                type="text"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-label-md text-on-surface mb-2" htmlFor="password">
-              Password
-            </label>
-            <div className="relative">
-              <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
-              <input
-                id="password"
-                type="password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g. John"
                 className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface placeholder:text-outline/50 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
               />
             </div>
@@ -92,19 +74,16 @@ export const Login: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-2 disabled:opacity-50 disabled:pointer-events-none"
+            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:pointer-events-none"
           >
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Entering...' : 'Enter App'}
             {!loading && <LogIn size={18} />}
           </button>
         </form>
 
-        <div className="text-center mt-6 space-y-2">
-          <p className="text-on-surface-variant text-label-md">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-primary hover:underline font-bold">
-              Register Here
-            </Link>
+        <div className="text-center mt-8 space-y-4">
+          <p className="text-on-surface-variant text-body-xs italic">
+            * If your name is new, a new account will be created automatically.
           </p>
           <div className="pt-4 border-t border-outline-variant/10">
             <Link to="/admin/login" className="text-secondary-fixed-dim hover:text-secondary hover:underline text-[12px] font-bold tracking-wider uppercase">

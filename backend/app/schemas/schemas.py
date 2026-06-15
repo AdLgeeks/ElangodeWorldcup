@@ -14,12 +14,12 @@ class TokenPayload(BaseModel):
     type: Optional[str] = None
 
 class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
+    email: str
+    password: Optional[str] = None
 
 class UserRegister(BaseModel):
-    email: EmailStr
-    password: str
+    email: str
+    password: Optional[str] = None
     full_name: str
 
 class UserProfileUpdate(BaseModel):
@@ -31,7 +31,7 @@ class UserStatusUpdate(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    email: EmailStr
+    email: str
     full_name: str
     role: str
     status: str
@@ -40,6 +40,7 @@ class UserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 # --- QUESTION SCHEMAS ---
 

@@ -74,14 +74,14 @@ export const Profile: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-stack-md">
               <div>
-                <label className="block text-label-md text-on-surface mb-2">Registered Email</label>
+                <label className="block text-label-md text-on-surface mb-2">Unique Login Name</label>
                 <input
-                  type="email"
+                  type="text"
                   disabled
                   value={user?.email || ''}
                   className="w-full bg-surface-container-low border border-outline-variant/20 rounded-xl py-3 px-4 text-on-surface-variant cursor-not-allowed font-body-md"
                 />
-                <span className="text-[10px] text-outline mt-1 block">Email address cannot be changed.</span>
+                <span className="text-[10px] text-outline mt-1 block">Your unique name cannot be changed.</span>
               </div>
 
               <div>
@@ -102,45 +102,47 @@ export const Profile: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-outline-variant/10">
-                <h3 className="font-label-md text-secondary uppercase tracking-wider mb-4">Change Password</h3>
-                
-                <div className="space-y-stack-md">
-                  <div>
-                    <label className="block text-label-md text-on-surface mb-2" htmlFor="newPassword">
-                      New Password (Optional)
-                    </label>
-                    <div className="relative">
-                      <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
-                      <input
-                        id="newPassword"
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
-                      />
+              {user?.role === 'admin' && (
+                <div className="pt-4 border-t border-outline-variant/10">
+                  <h3 className="font-label-md text-secondary uppercase tracking-wider mb-4">Change Password</h3>
+                  
+                  <div className="space-y-stack-md">
+                    <div>
+                      <label className="block text-label-md text-on-surface mb-2" htmlFor="newPassword">
+                        New Password (Optional)
+                      </label>
+                      <div className="relative">
+                        <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
+                        <input
+                          id="newPassword"
+                          type="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
+                        />
+                      </div>
                     </div>
-                  </div>
 
-                  <div>
-                    <label className="block text-label-md text-on-surface mb-2" htmlFor="confirmNewPassword">
-                      Confirm New Password
-                    </label>
-                    <div className="relative">
-                      <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
-                      <input
-                        id="confirmNewPassword"
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        placeholder="••••••••"
-                        className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
-                      />
+                    <div>
+                      <label className="block text-label-md text-on-surface mb-2" htmlFor="confirmNewPassword">
+                        Confirm New Password
+                      </label>
+                      <div className="relative">
+                        <Lock size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-outline" />
+                        <input
+                          id="confirmNewPassword"
+                          type="password"
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="••••••••"
+                          className="w-full bg-surface-container border border-outline-variant/30 rounded-xl py-3 pl-12 pr-4 text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all font-body-md"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <button
                 type="submit"

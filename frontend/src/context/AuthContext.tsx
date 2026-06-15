@@ -5,8 +5,8 @@ import { apiRequest } from '../services/api';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<User>;
-  register: (email: string, password: string, full_name: string) => Promise<User>;
+  login: (email: string, password?: string) => Promise<User>;
+  register: (email: string, password?: string, full_name?: string) => Promise<User>;
   logout: () => void;
   updateProfile: (fullName?: string, password?: string) => Promise<User>;
 }
@@ -50,10 +50,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, []);
 
-  const login = async (email: string, password: string): Promise<User> => {
+  const login = async (email: string, password?: string): Promise<User> => {
     const tokens = await apiRequest<{ access_token: string; refresh_token: string }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, ...(password && { password }) }),
       skipAuth: true,
     });
     
@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return currentUser;
   };
 
-  const register = async (email: string, password: string, full_name: string): Promise<User> => {
+  const register = async (email: string, password?: string, full_name?: string): Promise<User> => {
     const newUser = await apiRequest<User>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ email, password, full_name }),

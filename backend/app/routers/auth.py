@@ -23,15 +23,18 @@ class RefreshRequest(BaseModel):
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def register_user(user_in: UserRegister, db: Session = Depends(get_db)):
-    # Check if email exists
-    existing_user = db.query(User).filter(User.email == user_in.email).first()
+    # Check if name/email already exists
+    existing_user = db.query(User).filter(
+        (User.email == user_in.email) | (User.full_name == user_in.full_name)
+    ).first()
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Email already registered."
+            detail="Name already registered."
         )
         
-    hashed_pwd = get_password_hash(user_in.password)
+    password = user_in.password or "passwordless_default_hash_123!"
+    hashed_pwd = get_password_hash(password)
     user = User(
         email=user_in.email,
         full_name=user_in.full_name,
@@ -47,13 +50,53 @@ def register_user(user_in: UserRegister, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login_user(login_in: UserLogin, db: Session = Depends(get_db)):
-    user = db.query(User).filter(User.email == login_in.email).first()
-    if not user or not verify_password(login_in.password, user.password_hash):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-        )
-        
+    # 1. Check if the login name is the admin email
+    is_admin = login_in.email == settings.ADMIN_EMAIL or login_in.email == "admin@elangode.com"
+    
+    # 2. Try to find user by email or full_name
+    user = db.query(User).filter(
+        (User.email == login_in.email) | (User.full_name == login_in.email)
+    ).first()
+    
+    if is_admin:
+        # For admin, we MUST verify the password
+        if not user or not login_in.password or not verify_password(login_in.password, user.password_hash):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Incorrect admin credentials",
+            )
+    else:
+        # For regular users, we log them in by name.
+        # If the user doesn't exist, we auto-create/register them!
+        if not user:
+            name = login_in.email.strip()
+            if not name:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Name cannot be empty."
+                )
+            
+            # Check if name matches admin reserved keywords
+            if name.lower() == "admin":
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Cannot register with reserved name 'admin'."
+                )
+            
+            # Auto-register
+            dummy_pwd_hash = get_password_hash("passwordless_default_hash_123!")
+            user = User(
+                email=name,
+                full_name=name,
+                password_hash=dummy_pwd_hash,
+                role="user",
+                status="active",
+                points=0
+            )
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            
     if user.status != "active":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,

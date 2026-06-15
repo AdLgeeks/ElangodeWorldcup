@@ -235,3 +235,23 @@ def test_prediction_workflow(client):
     res = client.get("/api/results/", headers=headers_user)
     assert len(res.json()) == 1
     assert res.json()[0]["winner_name"] in ["Test User One", "Test User Two"]
+
+def test_passwordless_login(client):
+    # Try logging in with a new name -> should auto-register and return tokens
+    res = client.post(
+        "/api/auth/login",
+        json={"email": "JohnPasswordless"}
+    )
+    assert res.status_code == 200
+    assert "access_token" in res.json()
+    token = res.json()["access_token"]
+    
+    # Try logging in again with the same name -> should log in successfully
+    res = client.post(
+        "/api/auth/login",
+        json={"email": "JohnPasswordless"}
+    )
+    assert res.status_code == 200
+    assert "access_token" in res.json()
+    assert res.json()["access_token"] == token
+
