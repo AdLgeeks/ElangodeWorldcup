@@ -23,3 +23,39 @@ class Settings(BaseSettings):
     model_config = ConfigDict(case_sensitive=True)
 
 settings = Settings()
+
+# Sanitize DATABASE_URL (convert postgres:// to postgresql:// and URL-encode the password if needed)
+import urllib.parse
+
+def sanitize_db_url(url: str) -> str:
+    if not url or url.startswith("sqlite"):
+        return url
+    try:
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        
+        split = urllib.parse.urlsplit(url)
+        if split.password:
+            unquoted_password = urllib.parse.unquote(split.password)
+            quoted_password = urllib.parse.quote_plus(unquoted_password)
+            
+            username = split.username or ""
+            quoted_username = urllib.parse.quote_plus(urllib.parse.unquote(username)) if username else ""
+            
+            netloc = f"{quoted_username}:{quoted_password}@{split.hostname}"
+            if split.port:
+                netloc += f":{split.port}"
+            
+            url = urllib.parse.urlunsplit((
+                split.scheme,
+                netloc,
+                split.path,
+                split.query,
+                split.fragment
+            ))
+    except Exception:
+        pass
+    return url
+
+settings.DATABASE_URL = sanitize_db_url(settings.DATABASE_URL)
+
