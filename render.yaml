@@ -1,7 +1,5 @@
 databases:
   - name: elangode-db
-    databaseName: elangode
-    user: postgres
 
 services:
   - type: web
