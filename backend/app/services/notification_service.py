@@ -20,8 +20,9 @@ def create_global_notification(db: Session, title: str, message: str):
         for user in users
     ]
     if notifications:
-        db.bulk_save_objects(notifications)
+        db.add_all(notifications)
         db.commit()
+
 
 def get_user_notifications(db: Session, user_id: int):
     return db.query(Notification).filter(Notification.user_id == user_id).order_by(Notification.created_at.desc()).all()
